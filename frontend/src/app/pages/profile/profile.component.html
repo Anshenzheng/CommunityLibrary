@@ -9,7 +9,7 @@
       <div class="card-body text-center">
         <div class="display-4 mb-3">👤</div>
         <h4 class="mb-1">{{ currentUser?.realName }}</h4>
-        <p class="text-muted mb-1">@{{ currentUser?.username }}</p>
+        <p class="text-muted mb-1">用户名：{{ currentUser?.username }}</p>
         <span class="badge {{ currentUser?.role === 'ADMIN' ? 'bg-primary' : 'bg-success' }}">
           {{ getRoleText(currentUser?.role || '') }}
         </span>

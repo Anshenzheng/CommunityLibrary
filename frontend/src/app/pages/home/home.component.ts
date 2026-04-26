@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private bookService: BookService,
-    private authService: AuthService,
+    public authService: AuthService,
     private router: Router
   ) { }
 
@@ -61,6 +61,11 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/books'], {
       queryParams: { category: categoryId }
     });
+  }
+  
+  handleCategoryClick(categoryId: number, event: Event): void {
+    event.preventDefault();
+    this.searchByCategory(categoryId);
   }
 
   getStatusBadgeClass(status: string): string {

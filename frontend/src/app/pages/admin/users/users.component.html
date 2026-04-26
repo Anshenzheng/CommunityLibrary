@@ -81,7 +81,7 @@
           <tr *ngFor="let user of users">
             <td>{{ user.id }}</td>
             <td>
-              <div class="fw-bold">@{{ user.username }}</div>
+              <div class="fw-bold">{{ user.username }}</div>
             </td>
             <td>{{ user.realName }}</td>
             <td>{{ user.email || '-' }}</td>
@@ -103,7 +103,7 @@
                     class="btn btn-outline-secondary btn-sm me-1"
                     [disabled]="loadingMap[user.id]"
                     (click)="updateStatus(user, user.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')"
-                    title="{{ user.status === 'ACTIVE' ? '禁用用户' : '启用用户' }}"
+                    [title]="getStatusButtonTitle(user.status)"
                   >
                     {{ user.status === 'ACTIVE' ? '禁用' : '启用' }}
                   </button>
@@ -111,7 +111,7 @@
                     class="btn btn-outline-primary btn-sm"
                     [disabled]="loadingMap[user.id]"
                     (click)="updateRole(user, user.role === 'READER' ? 'ADMIN' : 'READER')"
-                    title="设为{{ user.role === 'READER' ? '管理员' : '读者' }}"
+                    [title]="getRoleButtonTitle(user.role)"
                   >
                     角色
                   </button>

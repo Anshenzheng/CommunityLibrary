@@ -57,7 +57,7 @@ export class AuthService {
     }
   }
   
-  login(credentials: LoginRequest): Observable<LoginResponse> {
+  login(credentials: LoginRequest): Observable<{ success: boolean; message: string; data: LoginResponse }> {
     return this.http.post<{ success: boolean; message: string; data: LoginResponse }>(
       `${environment.apiUrl}/auth/login`,
       credentials

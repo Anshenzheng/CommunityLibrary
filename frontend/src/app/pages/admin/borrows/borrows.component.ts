@@ -179,6 +179,10 @@ export class AdminBorrowsComponent implements OnInit {
   isPending(status: string): boolean {
     return status === 'PENDING';
   }
+  
+  isOverdue(status: string): boolean {
+    return status === 'OVERDUE';
+  }
 
   exportRecords(): void {
     this.adminService.exportBorrowRecords(

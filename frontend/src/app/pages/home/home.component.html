@@ -28,7 +28,7 @@
         href="#"
         class="badge bg-outline-primary text-decoration-none me-2 mb-2"
         style="background-color: rgba(92, 138, 106, 0.1); color: var(--primary-color);"
-        (click)="searchByCategory(category.id); $event.preventDefault()"
+        (click)="handleCategoryClick(category.id, $event)"
       >
         {{ category.name }}
       </a>
