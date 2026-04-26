@@ -1,0 +1,38 @@
+<div *ngIf="totalElements > 0" class="d-flex justify-content-between align-items-center mt-4">
+  <div class="text-muted small">
+    显示 {{ startItem }} - {{ endItem }} 条，共 {{ totalElements }} 条
+  </div>
+  
+  <nav aria-label="分页导航">
+    <ul class="pagination mb-0">
+      <li class="page-item" [class.disabled]="first">
+        <a class="page-link" href="#" (click)="goToPrevious(); $event.preventDefault()">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      
+      <li 
+        *ngFor="let page of pages" 
+        class="page-item"
+        [class.active]="page === currentPageDisplay"
+        [class.disabled]="page === '...'"
+      >
+        <a 
+          class="page-link" 
+          href="#"
+          *ngIf="page !== '...'"
+          (click)="goToPage(page as number); $event.preventDefault()"
+        >
+          {{ page }}
+        </a>
+        <span class="page-link" *ngIf="page === '...'">...</span>
+      </li>
+      
+      <li class="page-item" [class.disabled]="last">
+        <a class="page-link" href="#" (click)="goToNext(); $event.preventDefault()">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>

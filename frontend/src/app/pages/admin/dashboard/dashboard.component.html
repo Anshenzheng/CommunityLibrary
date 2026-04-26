@@ -1,0 +1,120 @@
+<div class="mb-4">
+  <h2>📊 数据概览</h2>
+  <p class="text-muted">查看社区图书角的整体运营数据</p>
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && stats">
+  <div class="row mb-5">
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('totalUsers') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('totalUsers')">
+          {{ stats.totalUsers }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('totalUsers') }}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('totalBooks') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('totalBooks')">
+          {{ stats.totalBooks }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('totalBooks') }}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('availableBooks') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('availableBooks')">
+          {{ stats.availableBooks }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('availableBooks') }}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('borrowedBooks') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('borrowedBooks')">
+          {{ stats.borrowedBooks }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('borrowedBooks') }}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('pendingRequests') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('pendingRequests')">
+          {{ stats.pendingRequests }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('pendingRequests') }}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('overdueCount') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('overdueCount')">
+          {{ stats.overdueCount }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('overdueCount') }}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('weeklyBorrows') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('weeklyBorrows')">
+          {{ stats.weeklyBorrows }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('weeklyBorrows') }}</div>
+      </div>
+    </div>
+    
+    <div class="col-md-4 col-lg-3 mb-4" *ngIf="stats">
+      <div class="stat-card">
+        <div class="stat-icon">{{ getStatIcon('weeklyReturns') }}</div>
+        <div class="stat-value" [style.color]="getStatColor('weeklyReturns')">
+          {{ stats.weeklyReturns }}
+        </div>
+        <div class="stat-label">{{ getStatLabel('weeklyReturns') }}</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="card p-4" style="background: linear-gradient(135deg, rgba(92, 138, 106, 0.05) 0%, rgba(212, 165, 116, 0.05) 100%);">
+    <h5 class="mb-3">📋 快捷操作</h5>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <a routerLink="/admin/borrows" class="btn btn-primary w-100">
+        🔍 借阅审核
+      </a>
+      </div>
+      <div class="col-md-3">
+        <a routerLink="/admin/books" class="btn btn-secondary w-100">
+        📚 图书管理
+      </a>
+      </div>
+      <div class="col-md-3">
+        <a routerLink="/admin/users" class="btn btn-info w-100 text-white">
+        👥 用户管理
+      </a>
+      </div>
+      <div class="col-md-3">
+        <a routerLink="/admin/statistics" class="btn btn-success w-100">
+        📊 统计分析
+      </a>
+      </div>
+    </div>
+  </div>
+</div>

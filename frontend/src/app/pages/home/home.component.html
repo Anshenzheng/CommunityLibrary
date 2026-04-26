@@ -1,0 +1,130 @@
+<div class="hero-section mb-5 rounded-3">
+  <div class="container">
+    <h1 class="hero-title mb-3">📚 社区图书角</h1>
+    <p class="hero-subtitle mb-4">让阅读成为一种生活方式，让知识在社区中传递</p>
+    
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="search-box">
+          <div class="input-group">
+            <span class="input-group-text">🔍</span>
+            <input 
+              type="text" 
+              class="form-control form-control-lg" 
+              placeholder="搜索图书名称、作者、ISBN..."
+              [(ngModel)]="searchKeyword"
+              (keyup.enter)="search()"
+            >
+            <button class="btn btn-primary" (click)="search()">搜索</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <span class="text-muted small me-2">热门分类：</span>
+      <a 
+        *ngFor="let category of categories.slice(0, 5)" 
+        href="#"
+        class="badge bg-outline-primary text-decoration-none me-2 mb-2"
+        style="background-color: rgba(92, 138, 106, 0.1); color: var(--primary-color);"
+        (click)="searchByCategory(category.id); $event.preventDefault()"
+      >
+        {{ category.name }}
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-5">
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">📖</div>
+      <div class="stat-value">{{ categories.length }}</div>
+      <div class="stat-label">图书分类</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-value">{{ featuredBooks.length }}</div>
+      <div class="stat-label">可借图书</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">社区</div>
+      <div class="stat-label">读者服务</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">🌿</div>
+      <div class="stat-value">书香</div>
+      <div class="stat-label">阅读氛围</div>
+    </div>
+  </div>
+</div>
+
+<div class="mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📚 推荐图书</h2>
+    <a routerLink="/books" class="btn btn-outline-primary btn-sm">查看全部</a>
+  </div>
+  
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">加载中...</span>
+    </div>
+  </div>
+  
+  <div *ngIf="!loading && featuredBooks.length === 0" class="empty-state">
+    <div class="empty-state-icon">📭</div>
+    <div class="empty-state-text">暂无图书</div>
+  </div>
+  
+  <div *ngIf="!loading && featuredBooks.length > 0" class="row">
+    <div *ngFor="let book of featuredBooks" class="col-6 col-md-3 mb-4">
+      <div class="card book-card h-100 cursor-pointer" routerLink="/books/{{ book.id }}">
+        <div class="book-cover">
+          <span *ngIf="!book.coverImage">📖</span>
+          <img *ngIf="book.coverImage" [src]="book.coverImage" alt="{{ book.title }}" class="w-100 h-100 object-fit-cover">
+        </div>
+        <div class="card-body">
+          <h5 class="book-title">{{ book.title }}</h5>
+          <p class="book-author">作者：{{ book.author || '未知' }}</p>
+          <p class="book-info small">
+            分类：{{ book.categoryName || '未分类' }}<br>
+            可借：{{ book.availableQuantity }} / {{ book.totalQuantity }}
+          </p>
+          <div class="book-status">
+            <span class="badge {{ getStatusBadgeClass(book.status) }}">
+              {{ getStatusText(book.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card p-4" style="background: linear-gradient(135deg, rgba(92, 138, 106, 0.05) 0%, rgba(212, 165, 116, 0.05) 100%);">
+  <div class="row align-items-center">
+    <div class="col-md-8">
+      <h3>🌿 加入我们的阅读社区</h3>
+      <p class="text-muted mb-0">
+        注册成为读者，即可借阅图书，参与社区阅读活动，与更多爱书之人一起分享阅读的乐趣。
+      </p>
+    </div>
+    <div class="col-md-4 text-center">
+      <ng-container *ngIf="!authService.isLoggedIn()">
+        <a routerLink="/register" class="btn btn-primary btn-lg me-2">立即注册</a>
+        <a routerLink="/login" class="btn btn-outline-primary btn-lg">登录</a>
+      </ng-container>
+      <ng-container *ngIf="authService.isLoggedIn()">
+        <a routerLink="/books" class="btn btn-primary btn-lg">开始借阅</a>
+      </ng-container>
+    </div>
+  </div>
+</div>

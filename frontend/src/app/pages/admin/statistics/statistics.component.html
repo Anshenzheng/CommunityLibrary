@@ -1,0 +1,108 @@
+<div class="mb-4">
+  <h2>📊 统计分析</h2>
+  <p class="text-muted">查看社区图书角的运营统计数据</p>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">开始日期</label>
+        <input 
+          type="date" 
+          class="form-control"
+          [(ngModel)]="startDate"
+        >
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">结束日期</label>
+        <input 
+          type="date" 
+          class="form-control"
+          [(ngModel)]="endDate"
+        >
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-primary me-2" (click)="onSearch()">查询</button>
+        <button class="btn btn-success" (click)="exportStatistics()">
+          📥 导出 Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-value">{{ getTotalUsers() }}</div>
+      <div class="stat-label">总用户数</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-value">{{ getTotalBorrowed() }}</div>
+      <div class="stat-label">借阅总数</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">📖</div>
+      <div class="stat-value">{{ getTotalReturned() }}</div>
+      <div class="stat-label">归还总数</div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="stat-card">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-value text-danger">{{ getTotalOverdue() }}</div>
+      <div class="stat-label">逾期总数</div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && statistics.length === 0" class="empty-state">
+  <div class="empty-state-icon">📊</div>
+  <div class="empty-state-text">暂无统计数据</div>
+</div>
+
+<div *ngIf="!loading && statistics.length > 0">
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>统计日期</th>
+            <th>总用户数</th>
+            <th>总图书数</th>
+            <th>借阅数</th>
+            <th>归还数</th>
+            <th>逾期数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let stat of statistics">
+            <td>{{ stat.statDate }}</td>
+            <td>{{ stat.totalUsers || 0 }}</td>
+            <td>{{ stat.totalBooks || 0 }}</td>
+            <td>{{ stat.totalBorrowed || 0 }}</td>
+            <td>{{ stat.totalReturned || 0 }}</td>
+            <td>
+              <span [class.text-danger]="(stat.totalOverdue || 0) > 0">
+                {{ stat.totalOverdue || 0 }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

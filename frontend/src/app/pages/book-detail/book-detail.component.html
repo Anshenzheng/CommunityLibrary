@@ -1,0 +1,88 @@
+<button class="btn btn-outline-secondary mb-4" (click)="goBack()">
+  ← 返回列表
+</button>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && book" class="card">
+  <div class="row g-0">
+    <div class="col-md-4">
+      <div class="book-cover h-100" style="min-height: 300px;">
+        <span *ngIf="!book.coverImage">📖</span>
+        <img *ngIf="book.coverImage" [src]="book.coverImage" alt="{{ book.title }}" class="w-100 h-100 object-fit-cover">
+      </div>
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <h2 class="card-title mb-0">{{ book.title }}</h2>
+          <span class="badge {{ getStatusBadgeClass(book.status) }} fs-6">
+            {{ getStatusText(book.status) }}
+          </span>
+        </div>
+        
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <p class="text-muted mb-2">
+              <strong>作者：</strong>{{ book.author || '未知' }}
+            </p>
+            <p class="text-muted mb-2">
+              <strong>出版社：</strong>{{ book.publisher || '未知' }}
+            </p>
+            <p class="text-muted mb-2">
+              <strong>ISBN：</strong>{{ book.isbn || '无' }}
+            </p>
+            <p class="text-muted mb-2">
+              <strong>出版日期：</strong>{{ book.publishDate || '未知' }}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p class="text-muted mb-2">
+              <strong>分类：</strong>{{ book.categoryName || '未分类' }}
+            </p>
+            <p class="text-muted mb-2">
+              <strong>位置：</strong>{{ book.location || '未设置' }}
+            </p>
+            <p class="text-muted mb-2">
+              <strong>库存：</strong>{{ book.availableQuantity }} / {{ book.totalQuantity }} 本
+            </p>
+          </div>
+        </div>
+        
+        <div class="mb-4">
+          <h5>图书简介</h5>
+          <p class="text-muted" style="white-space: pre-wrap;">
+            {{ book.description || '暂无简介' }}
+          </p>
+        </div>
+        
+        <div class="d-flex gap-2">
+          <button 
+            class="btn btn-primary btn-lg"
+            [disabled]="!canBorrow() || borrowing"
+            (click)="borrowBook()"
+          >
+            <span *ngIf="borrowing" class="spinner-border spinner-border-sm me-2"></span>
+            {{ borrowing ? '申请中...' : (canBorrow() ? '申请借阅' : '暂不可借') }}
+          </button>
+          
+          <button 
+            class="btn btn-outline-secondary btn-lg"
+            *ngIf="!canBorrow()"
+            disabled
+          >
+            库存不足
+          </button>
+        </div>
+        
+        <div *ngIf="!authService.isLoggedIn()" class="alert alert-info mt-4">
+          您还未登录，请先 <a routerLink="/login" class="alert-link">登录</a> 后再申请借阅。
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

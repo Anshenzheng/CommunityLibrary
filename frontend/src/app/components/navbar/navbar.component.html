@@ -1,0 +1,70 @@
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">社区图书角</a>
+    
+    <button class="navbar-toggler" type="button" (click)="toggleCollapse()">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" [class.show]="!isCollapsed">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">首页</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/books" routerLinkActive="active">图书浏览</a>
+        </li>
+        
+        <ng-container *ngIf="currentUser">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/my-borrows" routerLinkActive="active">我的借阅</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/profile" routerLinkActive="active">个人中心</a>
+          </li>
+        </ng-container>
+        
+        <ng-container *ngIf="currentUser?.role === 'ADMIN'">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              管理后台
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" routerLink="/admin/dashboard">数据概览</a></li>
+              <li><a class="dropdown-item" routerLink="/admin/books">图书管理</a></li>
+              <li><a class="dropdown-item" routerLink="/admin/users">用户管理</a></li>
+              <li><a class="dropdown-item" routerLink="/admin/borrows">借阅审核</a></li>
+              <li><a class="dropdown-item" routerLink="/admin/statistics">统计分析</a></li>
+            </ul>
+          </li>
+        </ng-container>
+      </ul>
+      
+      <ul class="navbar-nav">
+        <ng-container *ngIf="!currentUser">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/login">登录</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary ms-2" routerLink="/register">注册</a>
+          </li>
+        </ng-container>
+        
+        <ng-container *ngIf="currentUser">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <span class="me-1">👤</span>
+              {{ currentUser.realName }}
+              <span class="badge bg-primary ms-1" *ngIf="currentUser.role === 'ADMIN'">管理员</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" routerLink="/profile">个人中心</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" (click)="logout(); $event.preventDefault()">退出登录</a></li>
+            </ul>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </div>
+</nav>

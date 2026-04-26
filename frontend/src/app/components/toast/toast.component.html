@@ -1,0 +1,20 @@
+<div class="toast-container" *ngIf="messages.length > 0">
+  <div 
+    *ngFor="let message of messages"
+    class="toast show mb-2 p-3 {{ getToastClass(message.type) }}"
+    role="alert"
+  >
+    <div class="d-flex align-items-center">
+      <span class="me-2 fs-5">{{ getToastIcon(message.type) }}</span>
+      <div class="flex-grow-1">
+        <small class="d-block">{{ message.message }}</small>
+      </div>
+      <button 
+        type="button" 
+        class="btn-close ms-2"
+        (click)="removeMessage(message.id)"
+        style="filter: invert(1);"
+      ></button>
+    </div>
+  </div>
+</div>

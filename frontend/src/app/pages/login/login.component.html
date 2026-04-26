@@ -1,0 +1,74 @@
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-lg">
+      <div class="card-body p-5">
+        <div class="text-center mb-4">
+          <h2 class="mb-2">📚 欢迎回来</h2>
+          <p class="text-muted">登录您的社区图书角账户</p>
+        </div>
+        
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label class="form-label">用户名</label>
+            <div class="input-group">
+              <span class="input-group-text">👤</span>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="username"
+                placeholder="请输入用户名"
+                [class.is-invalid]="submitted && f['username'].errors"
+              >
+            </div>
+            <div *ngIf="submitted && f['username'].errors" class="text-danger small mt-1">
+              请输入用户名
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label">密码</label>
+            <div class="input-group">
+              <span class="input-group-text">🔒</span>
+              <input 
+                type="password" 
+                class="form-control"
+                formControlName="password"
+                placeholder="请输入密码"
+                [class.is-invalid]="submitted && f['password'].errors"
+              >
+            </div>
+            <div *ngIf="submitted && f['password'].errors" class="text-danger small mt-1">
+              请输入密码
+            </div>
+          </div>
+          
+          <button 
+            type="submit" 
+            class="btn btn-primary btn-lg w-100"
+            [disabled]="loading"
+          >
+            <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ loading ? '登录中...' : '登录' }}
+          </button>
+        </form>
+        
+        <div class="text-center mt-4">
+          <p class="text-muted mb-0">
+            还没有账户？
+            <a routerLink="/register" class="text-decoration-none">立即注册</a>
+          </p>
+        </div>
+        
+        <div class="mt-4 p-3 rounded" style="background-color: rgba(92, 138, 106, 0.05);">
+          <p class="small text-muted mb-1">
+            <strong>测试账户：</strong>
+          </p>
+          <p class="small text-muted mb-0">
+            管理员：admin / admin123<br>
+            读者：reader1 / user123
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

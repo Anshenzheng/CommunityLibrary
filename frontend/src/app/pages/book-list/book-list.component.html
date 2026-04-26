@@ -1,0 +1,109 @@
+<div class="mb-4">
+  <h2>📚 图书浏览</h2>
+  <p class="text-muted">发现您感兴趣的图书</p>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">搜索</label>
+        <div class="input-group">
+          <span class="input-group-text">🔍</span>
+          <input 
+            type="text" 
+            class="form-control"
+            placeholder="搜索书名、作者、ISBN..."
+            [(ngModel)]="searchKeyword"
+            (keyup.enter)="onSearch()"
+          >
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <label class="form-label">分类</label>
+        <select 
+          class="form-select"
+          [(ngModel)]="selectedCategory"
+          (change)="onCategoryChange()"
+        >
+          <option [ngValue]="null">全部分类</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+      
+      <div class="col-md-2">
+        <label class="form-label">状态</label>
+        <select 
+          class="form-select"
+          [(ngModel)]="selectedStatus"
+          (change)="onStatusChange()"
+        >
+          <option value="">全部状态</option>
+          <option value="AVAILABLE">可借</option>
+          <option value="BORROWED">已借出</option>
+          <option value="MAINTENANCE">维护中</option>
+        </select>
+      </div>
+      
+      <div class="col-md-3">
+        <button class="btn btn-primary me-2" (click)="onSearch()">搜索</button>
+        <button class="btn btn-outline-secondary" (click)="clearFilters()">清除</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && books.length === 0" class="empty-state">
+  <div class="empty-state-icon">📭</div>
+  <div class="empty-state-text">暂无图书</div>
+  <p class="text-muted">尝试调整搜索条件</p>
+</div>
+
+<div *ngIf="!loading && books.length > 0">
+  <div class="mb-3 text-muted small">
+    共找到 {{ totalElements }} 本图书
+  </div>
+  
+  <div class="row">
+    <div *ngFor="let book of books" class="col-6 col-md-3 mb-4">
+      <div class="card book-card h-100 cursor-pointer" routerLink="/books/{{ book.id }}">
+        <div class="book-cover">
+          <span *ngIf="!book.coverImage">📖</span>
+          <img *ngIf="book.coverImage" [src]="book.coverImage" alt="{{ book.title }}" class="w-100 h-100 object-fit-cover">
+        </div>
+        <div class="card-body">
+          <h5 class="book-title">{{ book.title }}</h5>
+          <p class="book-author">作者：{{ book.author || '未知' }}</p>
+          <p class="book-info small">
+            分类：{{ book.categoryName || '未分类' }}<br>
+            可借：{{ book.availableQuantity }} / {{ book.totalQuantity }}
+          </p>
+          <div class="book-status">
+            <span class="badge {{ getStatusBadgeClass(book.status) }}">
+              {{ getStatusText(book.status) }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <app-pagination
+    [pageNumber]="currentPage"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements"
+    [totalPages]="totalPages"
+    [first]="currentPage === 0"
+    [last]="currentPage >= totalPages - 1"
+    (pageChange)="onPageChange($event)"
+  ></app-pagination>
+</div>
