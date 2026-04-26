@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { PageResponse, User } from './book.service';
+import { PageResponse } from './book.service';
+import { User } from './auth.service';
 import { BorrowRecord } from './borrow.service';
 
 export interface DashboardStats {
