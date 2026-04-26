@@ -1,0 +1,242 @@
+<div class="mb-4">
+  <h2>📚 图书管理</h2>
+  <p class="text-muted">管理社区图书角的所有图书</p>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">搜索</label>
+        <input 
+          type="text" 
+          class="form-control"
+          placeholder="搜索书名、作者、ISBN..."
+          [(ngModel)]="searchKeyword"
+          (keyup.enter)="onSearch()"
+        >
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">分类</label>
+        <select 
+          class="form-select"
+          [(ngModel)]="selectedCategory"
+          (change)="onCategoryChange()"
+        >
+          <option [ngValue]="null">全部分类</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <button class="btn btn-primary me-2" (click)="onSearch()">搜索</button>
+        <button class="btn btn-success me-2" (click)="openAddModal()">
+          ➕ 添加图书
+        </button>
+        <button class="btn btn-outline-secondary" (click)="exportBooks()">
+          📥 导出 Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && books.length === 0" class="empty-state">
+  <div class="empty-state-icon">📭</div>
+  <div class="empty-state-text">暂无图书</div>
+  <p class="text-muted">点击「添加图书」添加第一本图书</p>
+</div>
+
+<div *ngIf="!loading && books.length > 0">
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>书名</th>
+            <th>作者</th>
+            <th>分类</th>
+            <th>库存/可借</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let book of books">
+            <td>{{ book.id }}</td>
+            <td>
+              <div class="fw-bold">{{ book.title }}</div>
+              <div class="text-muted small">{{ book.isbn || '-' }}</div>
+            </td>
+            <td>{{ book.author || '-' }}</td>
+            <td>{{ book.categoryName || '未分类' }}</td>
+            <td>
+              <span [class.text-danger]="book.availableQuantity === 0">
+                {{ book.availableQuantity }} / {{ book.totalQuantity }}
+              </span>
+            </td>
+            <td>
+              <span class="badge {{ getStatusBadgeClass(book.status) }}">
+                {{ getStatusText(book.status) }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-outline-primary btn-sm me-1" (click)="openEditModal(book)">
+                编辑
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="deleteBook(book)">
+                删除
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <app-pagination
+    [pageNumber]="currentPage"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements"
+    [totalPages]="totalPages"
+    [first]="currentPage === 0"
+    [last]="currentPage >= totalPages - 1"
+    (pageChange)="onPageChange($event)"
+  ></app-pagination>
+</div>
+
+<!-- 添加/编辑图书模态框 -->
+<div class="modal" [class.show]="showModal" style="display: block;" *ngIf="showModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ editingBook ? '编辑图书' : '添加图书' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <form [formGroup]="bookForm" (ngSubmit)="submitBook()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-8 mb-3">
+              <label class="form-label">书名 <span class="text-danger">*</span></label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="title"
+                placeholder="请输入书名"
+              >
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">ISBN</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="isbn"
+                placeholder="请输入ISBN"
+              >
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label">作者</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="author"
+                placeholder="请输入作者"
+              >
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">出版社</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="publisher"
+                placeholder="请输入出版社"
+              >
+            </div>
+            <div class="col-md-4 mb-3">
+              <label class="form-label">分类</label>
+              <select class="form-select" formControlName="categoryId">
+                <option [ngValue]="null">请选择分类</option>
+                <option *ngFor="let category of categories" [value]="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-3 mb-3">
+              <label class="form-label">库存总数 <span class="text-danger">*</span></label>
+              <input 
+                type="number" 
+                class="form-control"
+                formControlName="totalQuantity"
+                min="1"
+              >
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">可借数量 <span class="text-danger">*</span></label>
+              <input 
+                type="number" 
+                class="form-control"
+                formControlName="availableQuantity"
+                min="0"
+              >
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">存放位置</label>
+              <input 
+                type="text" 
+                class="form-control"
+                formControlName="location"
+                placeholder="如：A区-01架"
+              >
+            </div>
+            <div class="col-md-3 mb-3">
+              <label class="form-label">状态</label>
+              <select class="form-select" formControlName="status">
+                <option value="AVAILABLE">可借</option>
+                <option value="BORROWED">已借出</option>
+                <option value="MAINTENANCE">维护中</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">图书描述</label>
+            <textarea 
+              class="form-control"
+              rows="3"
+              formControlName="description"
+              placeholder="请输入图书描述..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">取消</button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="submitting"
+          >
+            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+            {{ editingBook ? '保存修改' : '添加图书' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="showModal"></div>

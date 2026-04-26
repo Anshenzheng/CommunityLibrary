@@ -1,0 +1,137 @@
+<div class="mb-4">
+  <h2>👥 用户管理</h2>
+  <p class="text-muted">管理社区图书角的所有用户</p>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">搜索</label>
+        <input 
+          type="text" 
+          class="form-control"
+          placeholder="搜索用户名、真实姓名..."
+          [(ngModel)]="searchKeyword"
+          (keyup.enter)="onSearch()"
+        >
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">角色</label>
+        <select 
+          class="form-select"
+          [(ngModel)]="selectedRole"
+          (change)="onFilterChange()"
+        >
+          <option value="">全部角色</option>
+          <option value="READER">读者</option>
+          <option value="ADMIN">管理员</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">状态</label>
+        <select 
+          class="form-select"
+          [(ngModel)]="selectedStatus"
+          (change)="onFilterChange()"
+        >
+          <option value="">全部状态</option>
+          <option value="ACTIVE">正常</option>
+          <option value="INACTIVE">禁用</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <button class="btn btn-primary me-2" (click)="onSearch()">搜索</button>
+        <button class="btn btn-success" (click)="exportUsers()">
+          📥 导出 Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && users.length === 0" class="empty-state">
+  <div class="empty-state-icon">👥</div>
+  <div class="empty-state-text">暂无用户</div>
+</div>
+
+<div *ngIf="!loading && users.length > 0">
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>用户名</th>
+            <th>真实姓名</th>
+            <th>邮箱</th>
+            <th>电话</th>
+            <th>角色</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.id }}</td>
+            <td>
+              <div class="fw-bold">@{{ user.username }}</div>
+            </td>
+            <td>{{ user.realName }}</td>
+            <td>{{ user.email || '-' }}</td>
+            <td>{{ user.phone || '-' }}</td>
+            <td>
+              <span class="badge {{ getRoleBadgeClass(user.role) }}">
+                {{ getRoleText(user.role) }}
+              </span>
+            </td>
+            <td>
+              <span class="badge {{ getStatusBadgeClass(user.status) }}">
+                {{ getStatusText(user.status) }}
+              </span>
+            </td>
+            <td>
+              <ng-container *ngIf="!isCurrentUser(user.id)">
+                <div class="btn-group">
+                  <button 
+                    class="btn btn-outline-secondary btn-sm me-1"
+                    [disabled]="loadingMap[user.id]"
+                    (click)="updateStatus(user, user.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')"
+                    title="{{ user.status === 'ACTIVE' ? '禁用用户' : '启用用户' }}"
+                  >
+                    {{ user.status === 'ACTIVE' ? '禁用' : '启用' }}
+                  </button>
+                  <button 
+                    class="btn btn-outline-primary btn-sm"
+                    [disabled]="loadingMap[user.id]"
+                    (click)="updateRole(user, user.role === 'READER' ? 'ADMIN' : 'READER')"
+                    title="设为{{ user.role === 'READER' ? '管理员' : '读者' }}"
+                  >
+                    角色
+                  </button>
+                </div>
+              </ng-container>
+              <span *ngIf="isCurrentUser(user.id)" class="text-muted small">当前用户</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <app-pagination
+    [pageNumber]="currentPage"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements"
+    [totalPages]="totalPages"
+    [first]="currentPage === 0"
+    [last]="currentPage >= totalPages - 1"
+    (pageChange)="onPageChange($event)"
+  ></app-pagination>
+</div>
