@@ -1,0 +1,162 @@
+<div class="mb-4">
+  <h2>📋 借阅审核</h2>
+  <p class="text-muted">审核读者的借阅申请，管理借阅记录</p>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">搜索</label>
+        <input 
+          type="text" 
+          class="form-control"
+          placeholder="搜索用户名、书名、ISBN..."
+          [(ngModel)]="searchKeyword"
+          (keyup.enter)="onSearch()"
+        >
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">状态</label>
+        <select 
+          class="form-select"
+          [(ngModel)]="selectedStatus"
+          (change)="onStatusChange()"
+        >
+          <option value="">全部状态</option>
+          <option value="PENDING">待审核</option>
+          <option value="BORROWED">借阅中</option>
+          <option value="OVERDUE">已逾期</option>
+          <option value="RETURNED">已归还</option>
+          <option value="REJECTED">已拒绝</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <button class="btn btn-primary me-2" (click)="onSearch()">搜索</button>
+        <button class="btn btn-success" (click)="exportRecords()">
+          📥 导出 Excel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && records.length === 0" class="empty-state">
+  <div class="empty-state-icon">📭</div>
+  <div class="empty-state-text">暂无借阅记录</div>
+</div>
+
+<div *ngIf="!loading && records.length > 0">
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>读者</th>
+            <th>图书</th>
+            <th>借阅日期</th>
+            <th>应还日期</th>
+            <th>归还日期</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of records">
+            <td>{{ record.id }}</td>
+            <td>
+              <div>{{ record.userRealName }}</div>
+              <div class="text-muted small">@{{ record.username }}</div>
+            </td>
+            <td>
+              <div>{{ record.bookTitle }}</div>
+              <div class="text-muted small">{{ record.bookAuthor }}</div>
+            </td>
+            <td>{{ record.borrowDate }}</td>
+            <td [class.text-danger]="isOverdue(record.status)">{{ record.dueDate }}</td>
+            <td>{{ record.returnDate || '-' }}</td>
+            <td>
+              <span class="badge {{ getStatusBadgeClass(record.status) }}">
+                {{ getStatusText(record.status) }}
+              </span>
+              <span *ngIf="isOverdue(record.status)" class="badge bg-danger ms-1">逾期</span>
+            </td>
+            <td>
+              <ng-container *ngIf="isPending(record.status)">
+                <button 
+                  class="btn btn-success btn-sm me-1"
+                  [disabled]="loadingMap[record.id]"
+                  (click)="approveRecord(record)"
+                >
+                  <span *ngIf="loadingMap[record.id]" class="spinner-border spinner-border-sm"></span>
+                  <span *ngIf="!loadingMap[record.id]">批准</span>
+                </button>
+                <button 
+                  class="btn btn-danger btn-sm"
+                  [disabled]="loadingMap[record.id]"
+                  (click)="openRejectModal(record)"
+                >
+                  拒绝
+                </button>
+              </ng-container>
+              <span *ngIf="!isPending(record.status)" class="text-muted">-</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <app-pagination
+    [pageNumber]="currentPage"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements"
+    [totalPages]="totalPages"
+    [first]="currentPage === 0"
+    [last]="currentPage >= totalPages - 1"
+    (pageChange)="onPageChange($event)"
+  ></app-pagination>
+</div>
+
+<!-- 拒绝原因模态框 -->
+<div class="modal" [class.show]="rejectModal.show" style="display: block;" *ngIf="rejectModal.show">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">拒绝借阅申请</h5>
+        <button type="button" class="btn-close" (click)="closeRejectModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">拒绝原因 <span class="text-danger">*</span></label>
+          <textarea 
+            class="form-control"
+            rows="3"
+            [(ngModel)]="rejectModal.reason"
+            placeholder="请输入拒绝原因..."
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeRejectModal()">取消</button>
+        <button 
+          type="button" 
+          class="btn btn-danger"
+          [disabled]="loadingMap[rejectModal.recordId]"
+          (click)="confirmReject()"
+        >
+          <span *ngIf="loadingMap[rejectModal.recordId]" class="spinner-border spinner-border-sm me-2"></span>
+          确认拒绝
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" *ngIf="rejectModal.show"></div>

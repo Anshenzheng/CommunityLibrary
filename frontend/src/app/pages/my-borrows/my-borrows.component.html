@@ -1,0 +1,96 @@
+<div class="mb-4">
+  <h2>📚 我的借阅</h2>
+  <p class="text-muted">查看您的借阅记录和当前借阅状态</p>
+</div>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-4">
+        <label class="form-label">状态筛选</label>
+        <select 
+          class="form-select"
+          [(ngModel)]="selectedStatus"
+          (change)="onStatusChange()"
+        >
+          <option value="">全部状态</option>
+          <option value="PENDING">待审核</option>
+          <option value="BORROWED">借阅中</option>
+          <option value="OVERDUE">已逾期</option>
+          <option value="RETURNED">已归还</option>
+          <option value="REJECTED">已拒绝</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border" role="status">
+    <span class="visually-hidden">加载中...</span>
+  </div>
+</div>
+
+<div *ngIf="!loading && records.length === 0" class="empty-state">
+  <div class="empty-state-icon">📚</div>
+  <div class="empty-state-text">暂无借阅记录</div>
+  <p class="text-muted">去 <a routerLink="/books" class="text-decoration-none">浏览图书</a> 开始您的阅读之旅吧</p>
+</div>
+
+<div *ngIf="!loading && records.length > 0">
+  <div class="row">
+    <div *ngFor="let record of records" class="col-12 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h5 class="mb-1">{{ record.bookTitle }}</h5>
+              <p class="text-muted mb-0 small">
+                作者：{{ record.bookAuthor || '未知' }}
+                <span class="mx-2">|</span>
+                ISBN：{{ record.bookIsbn || '无' }}
+              </p>
+            </div>
+            <div class="col-md-3">
+              <p class="mb-1">
+                <span class="badge {{ getStatusBadgeClass(record.status) }}">
+                  {{ getStatusText(record.status) }}
+                </span>
+                <span *ngIf="isOverdue(record.status)" class="badge bg-danger ms-1">⚠️ 逾期</span>
+              </p>
+              <p class="text-muted mb-0 small">
+                借阅日期：{{ record.borrowDate }}
+              </p>
+            </div>
+            <div class="col-md-3 text-end">
+              <p class="text-muted mb-1 small">应还日期：{{ record.dueDate }}</p>
+              <p *ngIf="record.returnDate" class="text-success mb-1 small">归还日期：{{ record.returnDate }}</p>
+              <p *ngIf="record.fineAmount && record.fineAmount > 0" class="text-danger mb-1 small">
+                逾期罚款：¥{{ record.fineAmount }}
+              </p>
+              <button 
+                *ngIf="canReturn(record.status)"
+                class="btn btn-primary btn-sm"
+                [disabled]="returnLoading[record.id]"
+                (click)="returnBook(record)"
+              >
+                <span *ngIf="returnLoading[record.id]" class="spinner-border spinner-border-sm me-1"></span>
+                还书
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <app-pagination
+    [pageNumber]="currentPage"
+    [pageSize]="pageSize"
+    [totalElements]="totalElements"
+    [totalPages]="totalPages"
+    [first]="currentPage === 0"
+    [last]="currentPage >= totalPages - 1"
+    (pageChange)="onPageChange($event)"
+  ></app-pagination>
+</div>

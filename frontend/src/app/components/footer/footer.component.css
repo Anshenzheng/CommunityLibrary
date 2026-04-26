@@ -1,0 +1,12 @@
+.footer {
+  background: linear-gradient(135deg, rgba(92, 138, 106, 0.05) 0%, rgba(212, 165, 116, 0.05) 100%);
+}
+
+.footer h5, .footer h6 {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.footer a:hover {
+  color: var(--primary-color) !important;
+}
