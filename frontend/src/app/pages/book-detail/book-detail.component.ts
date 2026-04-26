@@ -20,7 +20,7 @@ export class BookDetailComponent implements OnInit {
     private router: Router,
     private bookService: BookService,
     private borrowService: BorrowService,
-    private authService: AuthService,
+    public authService: AuthService,
     private toastService: ToastService
   ) { }
 

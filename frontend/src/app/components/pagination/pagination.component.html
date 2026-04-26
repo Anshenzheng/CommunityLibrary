@@ -6,7 +6,7 @@
   <nav aria-label="分页导航">
     <ul class="pagination mb-0">
       <li class="page-item" [class.disabled]="first">
-        <a class="page-link" href="#" (click)="goToPrevious(); $event.preventDefault()">
+        <a class="page-link" href="#" (click)="handlePreviousClick($event)">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
@@ -21,7 +21,7 @@
           class="page-link" 
           href="#"
           *ngIf="page !== '...'"
-          (click)="goToPage(page as number); $event.preventDefault()"
+          (click)="handlePageClick(page, $event)"
         >
           {{ page }}
         </a>
@@ -29,7 +29,7 @@
       </li>
       
       <li class="page-item" [class.disabled]="last">
-        <a class="page-link" href="#" (click)="goToNext(); $event.preventDefault()">
+        <a class="page-link" href="#" (click)="handleNextClick($event)">
           <span aria-hidden="true">&raquo;</span>
         </a>
       </li>

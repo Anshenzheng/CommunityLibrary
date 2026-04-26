@@ -162,4 +162,12 @@ export class AdminUsersComponent implements OnInit {
     const currentUser = this.authService.getCurrentUser();
     return currentUser?.id === userId;
   }
+  
+  getRoleButtonTitle(role: string): string {
+    return role === 'READER' ? '设为管理员' : '设为读者';
+  }
+  
+  getStatusButtonTitle(status: string): string {
+    return status === 'ACTIVE' ? '禁用用户' : '启用用户';
+  }
 }

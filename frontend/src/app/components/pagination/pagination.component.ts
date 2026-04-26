@@ -54,10 +54,27 @@ export class PaginationComponent {
     return result;
   }
 
-  goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages && page !== this.pageNumber + 1) {
+  goToPage(page: number | string, event?: Event): void {
+    if (event) {
+      event.preventDefault();
+    }
+    if (typeof page === 'number' && page >= 1 && page <= this.totalPages && page !== this.pageNumber + 1) {
       this.pageChange.emit(page - 1);
     }
+  }
+  
+  handlePageClick(page: number | string, event: Event): void {
+    this.goToPage(page, event);
+  }
+  
+  handlePreviousClick(event: Event): void {
+    event.preventDefault();
+    this.goToPrevious();
+  }
+  
+  handleNextClick(event: Event): void {
+    event.preventDefault();
+    this.goToNext();
   }
 
   goToPrevious(): void {
